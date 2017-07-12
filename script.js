@@ -1,5 +1,8 @@
 var canvasWidth = 600;
 var canvasHeight = 400;
+var imgPlayer;
+var imgBullet;
+var imgEnemy;
 
 var player = {
 	x : 280,
@@ -7,7 +10,7 @@ var player = {
 	y : 370,
 	height: 30,
 	draw : function(){
-		rect(this.x, this.y, this.width, this.height);
+		image(imgPlayer, this.x, this.y, this.width, this.height);
 	}
 }
 
@@ -27,7 +30,7 @@ function Bullet(I){
 		I.y -= I.yVelocity;
 	}
 	I.draw = function(){
-		rect(I.x, I.y, I.width, I.height);
+		image(imgBullet, I.x, I.y, I.width, I.height);
 	}
 	return I;
 }
@@ -44,7 +47,7 @@ function Enemy(I){
 		return I.x >= 0 && I.y >= 0 && I.x < canvasWidth - I.width && I.y < canvasHeight - I.height;
 	}
 	I.draw = function(){
-		rect(I.x, I.y, I.width, I.height);
+		image(imgEnemy, I.x, I.y, I.width, I.height);
 	}
 	I.update= function(){
 		I.active = I.active && I.inBounds();
@@ -56,6 +59,12 @@ function Enemy(I){
 function collision(enemy, bullet){
 	return bullet.x + bullet.width >= enemy.x && bullet.x < enemy.x + enemy.width &&
 			bullet.y + bullet.height >= enemy.y && bullet.y < enemy.y + enemy.height;
+}
+
+function preload(){
+	imgPlayer = loadImage("player.png");
+	imgBullet = loadImage("bullet.png");
+	imgEnemy = loadImage("enemy.png");
 }
 
 function setup(){
@@ -118,4 +127,4 @@ function draw(){
 			noLoop();
 		}
 	});
-}
+}	
