@@ -1,8 +1,13 @@
+const startButton = document.querySelector('.start');
 var canvasWidth = 600;
 var canvasHeight = 400;
 var imgPlayer;
 var imgBullet;
 var imgEnemy;
+var score = 0;
+var bulletTime = true;
+var reloadPage = false;
+var startGame = false;
 
 var player = {
 	x : 280,
@@ -74,57 +79,77 @@ function setup(){
 function draw(){
 	fill(255);
 	clear();
-	background(45);
-	if(keyIsDown(LEFT_ARROW)){
-		if(player.x-5 >= 0)
-			player.x -= 5;
-		else
-			player.x = 0;
-	}
-	if(keyIsDown(RIGHT_ARROW)){
-		if(player.x + 5 <= canvasWidth-player.width)
-			player.x += 5;
-		else
-			player.x = canvasWidth - player.width;
-	}
-	if(keyIsDown(32)){
-		bullets.push(Bullet({}));
-	}
-	player.draw();
+	background("#000");
+	text("score : " + score, 10, 10);
+	if(startGame){
+		if(keyIsDown(LEFT_ARROW)){
+			if(player.x-5 >= 0)
+				player.x -= 5;
+			else
+				player.x = 0;
+		}
+		if(keyIsDown(RIGHT_ARROW)){
+			if(player.x + 5 <= canvasWidth-player.width)
+				player.x += 5;
+			else
+				player.x = canvasWidth - player.width;
+		}
+		if(bulletTime){
+			if(keyIsDown(32)){
+				bullets.push(Bullet({}));
+			}
+			bulletTime = false;
+			setTimeout(() => bulletTime = true,100);
+		}
+		player.draw();
 
 
-	bullets = bullets.filter(function(bullet){ 
-		return bullet.active;
-	});
-	bullets.forEach(function(bullet){
-		bullet.update();
-		bullet.draw();
-	});
+		bullets = bullets.filter(function(bullet){ 
+			return bullet.active;
+		});
+		bullets.forEach(function(bullet){
+			bullet.update();
+			bullet.draw();
+		});
 
-	if(Math.random()<0.05){
-		enemies.push(Enemy({}));
-	}
-	enemies = enemies.filter(function(enemy){
-		return enemy.active;
-	});
-	enemies.forEach(function(enemy){
-		enemy.update();
-		enemy.draw();
-	});
-
-	bullets.forEach(function(bullet){
+		if(Math.random()<0.05){
+			enemies.push(Enemy({}));
+		}
+		enemies = enemies.filter(function(enemy){
+			return enemy.active;
+		});
 		enemies.forEach(function(enemy){
-			if(collision(enemy, bullet)){
+			enemy.update();
+			enemy.draw();
+		});
+
+		bullets.forEach(function(bullet){
+			enemies.forEach(function(enemy){
+				if(collision(enemy, bullet)){
+					enemy.active = false;
+					bullet.active = false;
+					score++;
+				}
+			});
+		});
+
+		enemies.forEach(function(enemy){
+			if(collision(enemy, player)){
 				enemy.active = false;
-				bullet.active = false;
+				noLoop();
+				textSize(40);
+				text("GAME OVER", 180, 200);
+				startGame = false;
+				reloadPage = true;
 			}
 		});
-	});
-
-	enemies.forEach(function(enemy){
-		if(collision(enemy, player)){
-			enemy.active = false;
-			noLoop();
-		}
-	});
+	}
 }	
+
+startButton.addEventListener('click', () => {
+	startGame = true;
+	startButton.textContent = "Retry !!";
+	if(reloadPage){
+		location.reload(true);
+	}
+})
