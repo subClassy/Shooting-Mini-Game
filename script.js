@@ -1,4 +1,5 @@
 const startButton = document.querySelector('.start');
+const levels = document.querySelectorAll('[data-value]');
 var canvasWidth = 600;
 var canvasHeight = 400;
 var imgPlayer;
@@ -8,6 +9,11 @@ var score = 0;
 var bulletTime = true;
 var reloadPage = false;
 var startGame = false;
+let levelValue = 0.05
+
+function getValue() {
+	levelValue = parseFloat(this.dataset.value);
+}
 
 var player = {
 	x : 280,
@@ -112,7 +118,7 @@ function draw(){
 			bullet.draw();
 		});
 
-		if(Math.random()<0.05){
+		if(Math.random()<`${levelValue}`){
 			enemies.push(Enemy({}));
 		}
 		enemies = enemies.filter(function(enemy){
@@ -144,7 +150,9 @@ function draw(){
 			}
 		});
 	}
-}	
+}
+
+levels.forEach(level => level.addEventListener('click', getValue));
 
 startButton.addEventListener('click', () => {
 	startGame = true;
@@ -153,3 +161,4 @@ startButton.addEventListener('click', () => {
 		location.reload(true);
 	}
 })
+
