@@ -5,6 +5,9 @@ var canvasHeight = 400;
 var imgPlayer;
 var imgBullet;
 var imgEnemy;
+var pew;
+var gameOver;
+var hit;
 var score = 0;
 var bulletTime = true;
 var reloadPage = false;
@@ -73,6 +76,9 @@ function collision(enemy, bullet){
 }
 
 function preload(){
+	pew = loadSound('pew.wav');
+	gameOver = loadSound('gameover.wav');
+	hit = loadSound('hit.wav');
 	imgPlayer = loadImage("player.png");
 	imgBullet = loadImage("bullet.png");
 	imgEnemy = loadImage("enemy.png");
@@ -102,6 +108,7 @@ function draw(){
 		}
 		if(bulletTime){
 			if(keyIsDown(32)){
+				pew.play();
 				bullets.push(Bullet({}));
 			}
 			bulletTime = false;
@@ -132,6 +139,7 @@ function draw(){
 		bullets.forEach(function(bullet){
 			enemies.forEach(function(enemy){
 				if(collision(enemy, bullet)){
+					hit.play();
 					enemy.active = false;
 					bullet.active = false;
 					score++;
@@ -143,6 +151,7 @@ function draw(){
 			if(collision(enemy, player)){
 				enemy.active = false;
 				noLoop();
+				gameOver.play();
 				textSize(40);
 				text("GAME OVER", 180, 200);
 				startGame = false;
